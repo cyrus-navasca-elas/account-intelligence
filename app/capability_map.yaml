@@ -1,0 +1,228 @@
+# ELAS QC Holdpoint — Capability Map (source of truth)
+#
+# READER (LLM) RULES:
+#   1. Map prospect initiatives ONLY to entries under `capabilities`.
+#   2. If a prospect need matches `not_capabilities`, DO NOT list as ai_gap.
+#      Emit ai_flags entry: `capability_unverified: <id>`.
+#   3. Use `signals` to detect a capability is relevant in job posts / news / site.
+#   4. Reuse `gap_language` when phrasing the prospect's current-state gap.
+#   5. `signal_weights` guides evidence weighting.
+
+product: elas QC Holdpoint
+one_liner: >
+  Coordination layer to schedule, dispatch, document, and sign off every
+  field inspection and test holdpoint across every party — from request to closeout.
+
+positioning:
+  complements: [Procore, Autodesk Build, commissioning systems, QA systems of record, LIMS]
+  replaces: []
+  scope_boundary: >
+    Punch lists, RFIs, submittals, cost, schedule, and safety stay in the
+    customer's existing PM/Cx system. Holdpoint owns the inspection lifecycle only.
+
+buyers: [Owner/Developer, General Contractor, QC/Quality lead, Commissioning lead]
+users:
+  - General Contractors (own inspections, need visibility)
+  - Trade Partners / Subs (request + resubmit, SMS-simple)
+  - Special Inspection & Testing Agencies (independent reporting to AHJ)
+  - Testing Laboratories (email reports self-file; LIMS untouched)
+  - Owners & Developers (monitor without GC system access)
+  - Engineers of Record (review + responsible-charge records)
+  - Building Officials / AHJ (email-only, no login)
+
+target_industries:
+  [Hospitals & healthcare, K-12 + higher-ed, Semiconductor / advanced fab,
+   Data centers, Airports, Transit & heavy civil, Water & utilities,
+   Stadiums & venues, High-rise commercial, Government facilities,
+   Industrial & energy]
+
+regulatory_context:
+  [IBC Chapter 17 special inspections, HCAI (CA hospitals), DSA (CA schools)]
+
+# ---------------------------------------------------------------------------
+# CAPABILITIES — things ELAS actually does.
+# ---------------------------------------------------------------------------
+capabilities:
+
+  - id: unified_inspection_view
+    name: One live view of every inspection
+    does: >
+      Real-time board of every inspection across all sites, trades, and parties.
+      States: requested, scheduled, passed, failed, overdue.
+    signals:
+      [tracking inspections in spreadsheet, coordinating across trades,
+       QC dashboard, inspection status reporting,
+       multi-site QC manager, portfolio quality visibility]
+    gap_language: >
+      Inspection status scattered across spreadsheets, email, and texts;
+      no single live view.
+
+  - id: auto_routing
+    name: Auto-routing by inspection type
+    does: >
+      Each request auto-dispatched to the party that owns that inspection type
+      (internal QC, 3rd-party testing, EOR, AHJ). Optional trade→inspector direct
+      path skips QC review.
+    signals:
+      [manual dispatch, coordinating third-party inspectors,
+       notifying AHJ, routing inspection requests]
+    gap_language: Manual dispatch; missed handoffs between QC, 3rd-party, EOR, AHJ.
+
+  - id: external_party_no_account
+    name: No-account external participation
+    does: >
+      Labs, AHJs, and city inspectors participate via email + per-user secure links.
+      One-click confirm responses auto-file against the inspection. No shared
+      passwords, no SSO lift for subs.
+    signals:
+      [AHJ portal, city inspector access, third-party inspector login,
+       external reviewer access, procurement blocking SSO for subs]
+    gap_language: >
+      External parties won't create accounts; approvals live in inbox threads
+      and don't tie back to the record.
+
+  - id: escalation_on_silence
+    name: Auto-escalation when parties go silent
+    does: Automatic escalation when the responsible party does not respond in window.
+    signals:
+      [no-shows, missed inspector response, delayed sign-offs,
+       chasing inspectors, follow-up burden]
+    gap_language: Silent parties surface only when the schedule already slipped.
+
+  - id: notice_period_rules
+    name: Notice-period enforcement
+    does: Per-inspection-type notice windows enforced (e.g., 48h for AHJ).
+    signals: [AHJ notice requirements, statutory notice windows, notice-period disputes]
+    gap_language: Notice rules tracked manually; disputes over whether/when notice went out.
+
+  - id: role_permissions
+    name: Scoped per-role permissions
+    does: Separate data pathways per persona (trade, lab, owner, AHJ, EOR).
+    signals: [external partner visibility, owner read-only access, role-based access]
+    gap_language: External parties see too much or too little; one-size portal.
+
+  - id: notifications_audit_log
+    name: SMS + email notifications with sent log
+    does: Trade + parties notified of every outcome via SMS and email; full auditable log.
+    signals: [inspector no-shows, notice disputes, missed notifications]
+    gap_language: No auditable notice trail.
+
+  - id: onsite_capture
+    name: On-site pass/fail capture
+    does: >
+      Pass/fail, photos, observations, plan markups, and signatures pinned to
+      exact location at the point of inspection.
+    signals: [inspection photos, field reports, plan markup, mobile QC app, location-tagged findings]
+    gap_language: Field results in paper/photos disconnected from record and location.
+
+  - id: reinspection_tracking
+    name: Re-inspection auto-routing + tracking
+    does: >
+      Failed inspections route themselves back for re-inspection. Repeat failures
+      surface by trade, sub, and inspection type as they happen.
+    signals: [rework reduction, first-time pass rate, subcontractor scorecarding, repeat NCRs]
+    gap_language: Re-inspections tracked by memory; repeat-failure patterns invisible until rework.
+
+  - id: quality_kpis
+    name: Quality KPIs by lab / inspector / trade
+    does: First-pass rate, response time, and completeness reported per lab, inspector, and trade.
+    signals: [quality KPIs, subcontractor performance scorecards, inspector SLA, lab performance]
+    gap_language: No objective performance data on labs, inspectors, or subs.
+
+  - id: exceptions_view
+    name: Exceptions-first management view
+    does: Managers see what is missing / overdue, not what is fine.
+    signals: [overdue inspections, backlog management, exception reporting]
+    gap_language: Managers scroll long lists; overdue items surface only at stoppage.
+
+  - id: continuous_closeout
+    name: Self-building closeout package
+    does: >
+      Handover package assembles continuously. PDF per holdpoint. Connects
+      Statement of Special Inspections → Final Report.
+    signals:
+      [closeout package, turnover documentation, handover binder,
+       Statement of Special Inspections, Final Report, warranty package, TAB reports]
+    gap_language: Closeout is a manual PDF-chasing scramble.
+
+  - id: pm_platform_interop
+    name: Coexists with Procore + Autodesk Build
+    does: >
+      Completed inspections push back into Procore / Autodesk Build. Holdpoint
+      does not replace PM system of record.
+    signals: [Procore, Autodesk Build, BIM 360, PM system integration, checklist sync]
+    gap_language: Inspection results re-keyed into PM system; drift between records.
+
+  - id: lab_workflow
+    name: Lab email-report self-filing
+    does: Testing labs email reports that self-file against the correct inspection. LIMS untouched.
+    signals: [testing lab reports, LIMS, special inspection agency, materials testing]
+    gap_language: Lab reports sit in inbox; manual filing against inspections.
+
+  - id: security_posture
+    name: Enterprise security posture
+    does: >
+      US-based AWS. SOC 2 Type I (report under NDA). Full data export any time.
+      Permanent deletion at project end. Per-user secure links; no shared passwords.
+    signals: [SOC 2, data residency, procurement security review, federal owner, HIPAA-adjacent]
+    gap_language: Shared-password portals; no attestation; no export guarantee.
+
+  - id: quality_native_data_model
+    name: Quality-team-native data model
+    does: >
+      Speaks ITPs, holdpoints, witness points, inspection types, and sign-offs
+      natively. Built by special-inspections practitioners.
+    signals: [ITP, hold point, witness point, special inspections, IBC Chapter 17, HCAI, DSA]
+    gap_language: Generic construction PM tool bent into a QC workflow.
+
+# ---------------------------------------------------------------------------
+# NOT CAPABILITIES — do NOT claim these. Flag if prospect needs them.
+# ---------------------------------------------------------------------------
+not_capabilities:
+  - id: three_phase_control
+    name: USACE / NAVFAC Three-Phase Control workflow
+    note: "No confirmed native module. Flag capability_unverified: three_phase_control."
+  - id: punch_list
+    name: Punch list management
+    note: Stays in customer's PM / Cx system by design.
+  - id: cx_system_of_record
+    name: Commissioning system of record
+    note: Holdpoint complements Cx; does not replace it.
+  - id: safety_ehs
+    name: Safety / EHS management
+    note: Out of scope.
+  - id: submittals_rfis
+    name: Submittals / RFIs / document control
+    note: Not offered.
+  - id: schedule_integration
+    name: P6 / MSP schedule integration
+    note: Not confirmed.
+  - id: cost_change_orders
+    name: Cost / change-order management
+    note: Not offered.
+  - id: lims_replacement
+    name: LIMS replacement for testing labs
+    note: Holdpoint does not touch lab LIMS or business systems.
+  - id: pm_system_replacement
+    name: Procore / Autodesk replacement
+    note: Coexists; does not replace PM system of record.
+  - id: engineer_signoff
+    name: Professional engineer sign-off / responsible charge
+    note: EOR retains responsible charge. Holdpoint does not sign for the engineer.
+
+# ---------------------------------------------------------------------------
+competitors_context:
+  manual_baseline: Spreadsheets + Outlook + phone
+  named:
+    - Procore Quality & Safety (weak on no-account external dispatch + re-inspection)
+    - FTQ360 (point inspection app; no dispatch)
+    - SafetyCulture (point inspection app; partial re-tracking)
+  holdpoint_wedge:
+    [dispatch to outside parties, escalates on silence, re-inspection auto-routing]
+
+signal_weights:
+  job_posting: high
+  news_award: medium
+  press_release: medium
+  company_site: medium
+  linkedin_post: low
