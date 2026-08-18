@@ -1,0 +1,32 @@
+from unittest.mock import patch
+
+from app.schemas.research import Initiative
+from app.services import capabilities as cap_mod
+
+
+def test_capability_map_loads_from_yaml():
+    cap_mod.load_capability_map.cache_clear()
+    cmap = cap_mod.load_capability_map()
+    assert len(cmap.capabilities) > 0
+    assert any(c.id == "unified_inspection_view" for c in cmap.capabilities)
+    assert any(n.id == "three_phase_control" for n in cmap.not_capabilities)
+
+
+def test_map_capabilities_discards_unknown_match_name():
+    init = Initiative(initiative="i", evidence="e", source_url="https://x")
+    fake_llm = '{"mapped":[{"index":0,"matched_capability":"Made Up Cap","match_reason":"r"}]}'
+    with patch("app.services.capabilities.call_llm", return_value=fake_llm):
+        out = cap_mod.map_capabilities([init])
+    assert out[0].matched_capability is None
+    assert out[0].unverified_capability is None
+
+
+def test_map_capabilities_accepts_valid_unverified_id():
+    init = Initiative(initiative="i", evidence="e", source_url="https://x")
+    fake_llm = (
+        '{"mapped":[{"index":0,"matched_capability":null,'
+        '"unverified_capability":"three_phase_control","match_reason":"r"}]}'
+    )
+    with patch("app.services.capabilities.call_llm", return_value=fake_llm):
+        out = cap_mod.map_capabilities([init])
+    assert out[0].unverified_capability == "three_phase_control"

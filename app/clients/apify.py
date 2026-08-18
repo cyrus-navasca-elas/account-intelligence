@@ -1,11 +1,16 @@
 from app.config import settings
 
 
-def fetch_job_postings(domain: str, name: str | None = None) -> list[dict]:
-    """Fetch job postings for a company via Apify.
+def fetch_job_postings(
+    domain: str,
+    name: str | None = None,
+    *,
+    limit: int = 25,
+    time_range: str = "6m",
+) -> list[dict]:
+    """Fetch recent job postings for a company via the career-site actor.
 
-    TODO: pick actor, wire real run_input once APIFY_JOBS_ACTOR_ID set.
-    Returns raw dataset items.
+    Returns raw dataset items exactly as the actor emits them.
     """
     if not settings.apify_api_key or not settings.apify_jobs_actor_id:
         return []
@@ -13,9 +18,19 @@ def fetch_job_postings(domain: str, name: str | None = None) -> list[dict]:
     from apify_client import ApifyClient
 
     client = ApifyClient(settings.apify_api_key)
-    run = client.actor(settings.apify_jobs_actor_id).call(
-        run_input={"domain": domain, "companyName": name}
-    )
+    run_input: dict = {
+        "domainFilter": [domain],
+        "timeRange": time_range,
+        "limit": limit,
+        "descriptionType": "text",
+    }
+    run = client.actor(settings.apify_jobs_actor_id).call(run_input=run_input)
     if not run:
         return []
-    return list(client.dataset(run["defaultDatasetId"]).iterate_items())
+    # Handle both Run object (attribute access) and dict (key access)
+    dataset_id = getattr(run, "default_dataset_id", None) or (
+        run.get("defaultDatasetId") if isinstance(run, dict) else None
+    )
+    if not dataset_id:
+        return []
+    return list(client.dataset(dataset_id).iterate_items())
