@@ -11,7 +11,6 @@ class Settings(BaseSettings):
     anthropic_model: str = "claude-opus-4-7"
     apify_api_key: str = ""
     apify_jobs_actor_id: str = ""
-    tavily_api_key: str = ""
 
     capability_map_path: str = "app/capability_map.yaml"
 

@@ -11,8 +11,7 @@ client = TestClient(app)
 def mock_signals():
     """Patch signal gathering to prevent network calls in all tests."""
     with patch("app.services.signals.apify.fetch_job_postings", return_value=[]), \
-         patch("app.services.signals.tavily.search_news", return_value=[]), \
-         patch("app.services.signals.tavily.fetch_site", return_value=""):
+         patch("app.services.signals.web_search.search_company_signals", return_value=[]):
         yield
 
 
