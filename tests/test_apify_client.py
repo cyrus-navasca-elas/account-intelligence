@@ -10,6 +10,7 @@ def test_fetch_job_postings_builds_correct_run_input():
     fake_client.actor.return_value = fake_actor
     fake_client.dataset.return_value.iterate_items.return_value = iter([])
 
+    # Patch the origin module — ApifyClient is imported lazily inside fetch_job_postings, so patching app.clients.apify.ApifyClient would not intercept it.
     with patch("apify_client.ApifyClient", return_value=fake_client), \
          patch.object(apify.settings, "apify_api_key", "k"), \
          patch.object(apify.settings, "apify_jobs_actor_id", "fantastic-jobs/career-site-job-listing-api"):
