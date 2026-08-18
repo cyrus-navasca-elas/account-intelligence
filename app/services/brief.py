@@ -20,9 +20,13 @@ def assemble_brief(
     sources = [Source(type=s.type, url=s.url, summary=s.text[:200]) for s in signals]
 
     flags: list[str] = []
+    seen: set[str] = set()
     for m in mapped:
-        if m.matched_capability is None:
-            flags.append(f"unmatched_initiative: {m.initiative.initiative}")
+        if m.unverified_capability:
+            flag = f"capability_unverified: {m.unverified_capability}"
+            if flag not in seen:
+                seen.add(flag)
+                flags.append(flag)
 
     status = "enriched" if initiatives else "failed"
     current_state = _summarize_current_state(initiatives)
