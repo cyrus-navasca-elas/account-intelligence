@@ -28,3 +28,27 @@ def test_fetch_job_postings_returns_empty_without_key():
     from app.clients import apify
     with patch.object(apify.settings, "apify_api_key", ""):
         assert apify.fetch_job_postings("prospect.com") == []
+
+
+def test_fetch_job_postings_handles_run_object():
+    """Test that real apify-client Run objects (with attributes) work correctly."""
+    from app.clients import apify
+
+    # Mock a Run object with attribute access (like real apify-client)
+    fake_run = MagicMock()
+    fake_run.default_dataset_id = "ds-run-object"
+
+    fake_actor = MagicMock()
+    fake_actor.call.return_value = fake_run
+    fake_client = MagicMock()
+    fake_client.actor.return_value = fake_actor
+    fake_client.dataset.return_value.iterate_items.return_value = iter([])
+
+    with patch("apify_client.ApifyClient", return_value=fake_client), \
+         patch.object(apify.settings, "apify_api_key", "k"), \
+         patch.object(apify.settings, "apify_jobs_actor_id", "fantastic-jobs/career-site-job-listing-api"):
+        result = apify.fetch_job_postings("prospect.com")
+
+    # Verify it correctly accessed the Run object's attribute
+    fake_client.dataset.assert_called_once_with("ds-run-object")
+    assert result == []

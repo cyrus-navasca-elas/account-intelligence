@@ -27,4 +27,10 @@ def fetch_job_postings(
     run = client.actor(settings.apify_jobs_actor_id).call(run_input=run_input)
     if not run:
         return []
-    return list(client.dataset(run["defaultDatasetId"]).iterate_items())
+    # Handle both Run object (attribute access) and dict (key access)
+    dataset_id = getattr(run, "default_dataset_id", None) or (
+        run.get("defaultDatasetId") if isinstance(run, dict) else None
+    )
+    if not dataset_id:
+        return []
+    return list(client.dataset(dataset_id).iterate_items())
