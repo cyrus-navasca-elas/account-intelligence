@@ -33,3 +33,62 @@ def test_gather_signals_skips_jobs_without_description():
         from app.services import signals
         out = signals.gather_signals(domain="prospect.com", name=None)
     assert out == []
+
+
+def test_gather_signals_packs_ai_fields_into_text():
+    fake_jobs = [
+        {
+            "url": "https://x/y",
+            "title": "QC Manager",
+            "description_text": "Full JD body here.",
+            "date_posted": "2026-08-10",
+            "locations_derived": ["Tacoma, WA, USA"],
+            "ai_salary_min_value": 120000,
+            "ai_salary_max_value": 165000,
+            "ai_salary_currency": "USD",
+            "ai_salary_unit_text": "YEAR",
+            "ai_experience_level": "10+",
+            "ai_work_arrangement": "On-site",
+            "ai_employment_type": ["FULL_TIME"],
+            "ai_key_skills": ["Three-Phase Control", "USACE Compliance"],
+            "ai_keywords": ["NAVFAC", "DFOW"],
+            "ai_core_responsibilities": "Lead QC program.",
+            "ai_requirements_summary": "10+ years USACE.",
+        }
+    ]
+    with patch("app.services.signals.apify.fetch_job_postings", return_value=fake_jobs), \
+         patch("app.services.signals.web_search.search_company_signals", return_value=[]):
+        from app.services import signals
+        out = signals.gather_signals(domain="prospect.com", name="X")
+
+    text = out[0].text
+    assert "QC Manager" in text
+    assert "Tacoma, WA, USA" in text
+    assert "salary=120000-165000 USD YEAR" in text
+    assert "level=10+" in text
+    assert "arrangement=On-site" in text
+    assert "Skills: Three-Phase Control, USACE Compliance" in text
+    assert "Keywords: NAVFAC, DFOW" in text
+    assert "Responsibilities: Lead QC program." in text
+    assert "Requirements: 10+ years USACE." in text
+    assert "Full JD body here." in text
+
+
+def test_gather_signals_omits_absent_ai_fields():
+    fake_jobs = [
+        {
+            "url": "https://x/y",
+            "title": "Estimator",
+            "description_text": "Body.",
+        }
+    ]
+    with patch("app.services.signals.apify.fetch_job_postings", return_value=fake_jobs), \
+         patch("app.services.signals.web_search.search_company_signals", return_value=[]):
+        from app.services import signals
+        out = signals.gather_signals(domain="prospect.com", name=None)
+    text = out[0].text
+    assert "salary=" not in text
+    assert "Skills:" not in text
+    assert "Keywords:" not in text
+    assert "Estimator" in text
+    assert "Body." in text

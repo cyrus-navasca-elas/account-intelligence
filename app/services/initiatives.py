@@ -37,5 +37,5 @@ def infer_initiatives(signals: list[Signal]) -> list[Initiative]:
 def _format_signals(signals: list[Signal]) -> str:
     lines = []
     for s in signals:
-        lines.append(f"[{s.type}] {s.url}\n{s.text[:2000]}\n---")
+        lines.append(f"[{s.type}] {s.url}\n{s.text[:6000]}\n---")
     return "\n".join(lines)
