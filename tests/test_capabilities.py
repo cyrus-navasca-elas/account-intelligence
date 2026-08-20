@@ -72,3 +72,13 @@ def test_detect_flags_ignores_signals_without_facts():
     cmap = load_capability_map()
     sigs = [Signal(type="news", url="a", text="Three-Phase Control mentioned in prose")]
     assert detect_flags_from_skills(sigs, cmap) == []
+
+
+def test_detect_flags_ignores_non_job_posting_signals_even_if_facts_present():
+    from app.schemas.research import JobFacts, Signal
+    from app.services.capabilities import detect_flags_from_skills, load_capability_map
+    load_capability_map.cache_clear()
+    cmap = load_capability_map()
+    sigs = [Signal(type="news", url="https://n", text="",
+                   facts=JobFacts(skills=["Three-Phase Control"]))]
+    assert detect_flags_from_skills(sigs, cmap) == []

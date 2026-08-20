@@ -69,3 +69,17 @@ def test_brief_status_failed_when_no_initiatives():
         signals=[], initiatives=[], mapped=[], gaps=[], questions=[], angle="",
     )
     assert brief.status == "failed"
+
+
+def test_format_salary_range_single_min_only():
+    from app.schemas.research import JobFacts
+    from app.services.brief import _format_salary_range
+    f = JobFacts(salary_min=120000, salary_currency="USD", salary_unit="YEAR")
+    assert _format_salary_range(f) == "120000 USD/YEAR"
+
+
+def test_format_salary_range_single_max_only():
+    from app.schemas.research import JobFacts
+    from app.services.brief import _format_salary_range
+    f = JobFacts(salary_max=165000, salary_currency="USD", salary_unit="YEAR")
+    assert _format_salary_range(f) == "165000 USD/YEAR"

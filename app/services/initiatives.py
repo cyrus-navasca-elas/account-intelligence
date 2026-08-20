@@ -33,8 +33,7 @@ def infer_initiatives(signals: list[Signal]) -> list[Initiative]:
     if not signals:
         return []
 
-    # Sort signals by recency (date_posted desc), then salary (salary_max desc),
-    # then original index (asc) to maintain stable sort.
+    # Negate index so reverse=True preserves input order for ties (higher orig index sorts later).
     ordered = sorted(
         enumerate(signals),
         key=lambda p: (_rank(p[1]), -p[0]),

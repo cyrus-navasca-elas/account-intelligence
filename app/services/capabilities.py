@@ -124,6 +124,8 @@ def detect_flags_from_skills(signals, cmap):
     hits: list[str] = []
     seen: set[str] = set()
     for s in signals:
+        if s.type != "job_posting":
+            continue
         facts = getattr(s, "facts", None)
         if not facts or not facts.skills:
             continue

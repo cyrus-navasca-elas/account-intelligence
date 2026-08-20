@@ -194,7 +194,7 @@ not_capabilities:
   - id: safety_ehs
     name: Safety / EHS management
     note: Out of scope.
-    signals: ["ehs", "safety audit", "environmental health and safety"]
+    signals: ["ehs management", "safety audit", "environmental health and safety"]
   - id: submittals_rfis
     name: Submittals / RFIs / document control
     note: Not offered.
