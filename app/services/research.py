@@ -7,20 +7,19 @@ def run_research(company_id: str, req: ResearchRequest) -> ResearchBrief:
     sigs = signals.gather_signals(domain=req.domain, name=req.name)
     if not sigs:
         return brief.assemble_brief(
-            signals=[], initiatives=[], mapped=[], gaps=[], questions=[], angle=""
+            signals=[], initiatives=[], mapped=[], gaps=[], questions=[], angle="",
+            deterministic_flags=[],
         )
 
     inits = initiatives.infer_initiatives(sigs)
     mapped = capabilities.map_capabilities(inits)
+    cmap = capabilities.load_capability_map()
+    det_flags = capabilities.detect_flags_from_skills(sigs, cmap)
     gap_list = gaps.synthesize_gaps(mapped)
     q_list = questions.generate_questions(gap_list)
     angle_text = angle.pick_angle(gap_list)
 
     return brief.assemble_brief(
-        signals=sigs,
-        initiatives=inits,
-        mapped=mapped,
-        gaps=gap_list,
-        questions=q_list,
-        angle=angle_text,
+        signals=sigs, initiatives=inits, mapped=mapped, gaps=gap_list,
+        questions=q_list, angle=angle_text, deterministic_flags=det_flags,
     )

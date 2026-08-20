@@ -16,6 +16,8 @@ def assemble_brief(
     gaps: list[Gap],
     questions: list[DiscoveryQuestion],
     angle: str,
+    *,
+    deterministic_flags: list[str] | None = None,
 ) -> ResearchBrief:
     sources = [Source(type=s.type, url=s.url, summary=s.text[:200]) for s in signals]
 
@@ -23,10 +25,14 @@ def assemble_brief(
     seen: set[str] = set()
     for m in mapped:
         if m.unverified_capability:
-            flag = f"capability_unverified: {m.unverified_capability}"
-            if flag not in seen:
-                seen.add(flag)
-                flags.append(flag)
+            f = f"capability_unverified: {m.unverified_capability}"
+            if f not in seen:
+                seen.add(f)
+                flags.append(f)
+    for f in (deterministic_flags or []):
+        if f not in seen:
+            seen.add(f)
+            flags.append(f)
 
     status = "enriched" if initiatives else "failed"
     current_state = _summarize_current_state(initiatives)
