@@ -1,5 +1,5 @@
 from app.clients import apify, web_search
-from app.schemas.research import Signal
+from app.schemas.research import JobFacts, Signal
 
 
 def gather_signals(domain: str | None, name: str | None) -> list[Signal]:
@@ -13,7 +13,12 @@ def gather_signals(domain: str | None, name: str | None) -> list[Signal]:
             if not text:
                 continue
             signals.append(
-                Signal(type="job_posting", url=str(j.get("url") or ""), text=text)
+                Signal(
+                    type="job_posting",
+                    url=str(j.get("url") or ""),
+                    text=text,
+                    facts=_build_job_facts(j),
+                )
             )
 
     if name:
@@ -79,6 +84,17 @@ def _build_job_text(j: dict) -> str:
     parts.append(desc)
 
     return "\n\n".join(parts)
+
+
+def _build_job_facts(j: dict) -> JobFacts:
+    return JobFacts(
+        salary_min=j.get("ai_salary_min_value"),
+        salary_max=j.get("ai_salary_max_value"),
+        salary_currency=j.get("ai_salary_currency"),
+        salary_unit=j.get("ai_salary_unit_text"),
+        skills=list(j.get("ai_key_skills") or []),
+        date_posted=(str(j.get("date_posted")) if j.get("date_posted") else None),
+    )
 
 
 def _fmt_salary(j: dict) -> str:

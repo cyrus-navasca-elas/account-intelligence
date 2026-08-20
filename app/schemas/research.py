@@ -21,10 +21,20 @@ class ResearchRequest(BaseModel):
     force: bool = False
 
 
+class JobFacts(BaseModel):
+    salary_min: float | None = None
+    salary_max: float | None = None
+    salary_currency: str | None = None
+    salary_unit: str | None = None
+    skills: list[str] = []
+    date_posted: str | None = None
+
+
 class Signal(BaseModel):
     type: SignalType
     url: str
     text: str
+    facts: JobFacts | None = None
 
 
 class Initiative(BaseModel):

@@ -74,6 +74,47 @@ def test_gather_signals_packs_ai_fields_into_text():
     assert "Full JD body here." in text
 
 
+def test_gather_signals_populates_structured_job_facts():
+    fake_jobs = [
+        {
+            "url": "https://x/y",
+            "title": "QCM",
+            "description_text": "Body.",
+            "date_posted": "2026-07-28T17:15:46",
+            "ai_salary_min_value": 120000,
+            "ai_salary_max_value": 165000,
+            "ai_salary_currency": "USD",
+            "ai_salary_unit_text": "YEAR",
+            "ai_key_skills": ["Three-Phase Control", "USACE Compliance"],
+        }
+    ]
+    with patch("app.services.signals.apify.fetch_job_postings", return_value=fake_jobs), \
+         patch("app.services.signals.web_search.search_company_signals", return_value=[]):
+        from app.services import signals
+        out = signals.gather_signals(domain="prospect.com", name=None)
+    f = out[0].facts
+    assert f is not None
+    assert f.salary_min == 120000
+    assert f.salary_max == 165000
+    assert f.salary_currency == "USD"
+    assert f.salary_unit == "YEAR"
+    assert f.skills == ["Three-Phase Control", "USACE Compliance"]
+    assert f.date_posted == "2026-07-28T17:15:46"
+
+
+def test_gather_signals_facts_absent_fields_default():
+    fake_jobs = [{"url": "https://x/y", "title": "T", "description_text": "b"}]
+    with patch("app.services.signals.apify.fetch_job_postings", return_value=fake_jobs), \
+         patch("app.services.signals.web_search.search_company_signals", return_value=[]):
+        from app.services import signals
+        out = signals.gather_signals(domain="prospect.com", name=None)
+    f = out[0].facts
+    assert f is not None
+    assert f.salary_min is None and f.salary_max is None
+    assert f.skills == []
+    assert f.date_posted is None
+
+
 def test_gather_signals_omits_absent_ai_fields():
     fake_jobs = [
         {
