@@ -21,11 +21,28 @@ Return JSON: {"initiatives": [{"initiative": "...", "evidence": "...", "source_u
 """.strip()
 
 
+def _rank(sig):
+    """Rank key for sorting: (date_posted, salary_max) both treated as descending."""
+    facts = getattr(sig, "facts", None)
+    date = (facts.date_posted if facts and facts.date_posted else "")
+    salary = (facts.salary_max if facts and facts.salary_max else 0.0)
+    return (date, salary)
+
+
 def infer_initiatives(signals: list[Signal]) -> list[Initiative]:
     if not signals:
         return []
 
-    user = _format_signals(signals)
+    # Sort signals by recency (date_posted desc), then salary (salary_max desc),
+    # then original index (asc) to maintain stable sort.
+    ordered = sorted(
+        enumerate(signals),
+        key=lambda p: (_rank(p[1]), -p[0]),
+        reverse=True,
+    )
+    signals_ordered = [s for _, s in ordered]
+
+    user = _format_signals(signals_ordered)
     raw = call_llm(system=INITIATIVES_SYSTEM_PROMPT, user=user)
     try:
         data = parse_json(raw)
