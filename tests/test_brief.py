@@ -1,9 +1,34 @@
-from app.schemas.research import Initiative, MappedInitiative
+from app.schemas.research import Initiative, JobFacts, MappedInitiative, Signal
 from app.services.brief import assemble_brief
 
 
 def _init(text: str) -> Initiative:
     return Initiative(initiative=text, evidence="e", source_url="https://x")
+
+
+def test_brief_source_carries_salary_and_skills_for_jobs():
+    sigs = [
+        Signal(
+            type="job_posting", url="https://x/y", text="Title...\n\nbody",
+            facts=JobFacts(
+                salary_min=120000, salary_max=165000,
+                salary_currency="USD", salary_unit="YEAR",
+                skills=["Three-Phase Control", "USACE Compliance"],
+            ),
+        ),
+        Signal(type="news", url="https://n1", text="news body"),
+    ]
+    b = assemble_brief(
+        signals=sigs, initiatives=[_init("x")], mapped=[],
+        gaps=[], questions=[], angle="",
+    )
+    job_src = next(s for s in b.sources if s.url == "https://x/y")
+    assert job_src.salary_range == "120000-165000 USD/YEAR"
+    assert job_src.skills == ["Three-Phase Control", "USACE Compliance"]
+
+    news_src = next(s for s in b.sources if s.url == "https://n1")
+    assert news_src.salary_range is None
+    assert news_src.skills == []
 
 
 def test_brief_flags_unverified_capability():

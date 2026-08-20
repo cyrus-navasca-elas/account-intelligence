@@ -67,6 +67,8 @@ class Source(BaseModel):
     type: str
     url: str
     summary: str
+    salary_range: str | None = None
+    skills: list[str] = []
 
 
 class ResearchBrief(BaseModel):
