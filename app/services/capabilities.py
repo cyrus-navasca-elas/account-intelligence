@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 from pydantic import BaseModel
 
-from app.clients.anthropic import call_llm
+from app.clients.anthropic import call_llm, parse_json
 from app.config import settings
 from app.schemas.research import Initiative, MappedInitiative
 
@@ -87,7 +87,7 @@ def map_capabilities(initiatives: list[Initiative]) -> list[MappedInitiative]:
     raw = call_llm(system=CAPABILITY_MAPPING_PROMPT, user=user)
 
     try:
-        data = json.loads(raw)
+        data = parse_json(raw)
         mapped_by_idx = {m["index"]: m for m in data.get("mapped", [])}
     except (json.JSONDecodeError, TypeError, ValueError, KeyError):
         mapped_by_idx = {}

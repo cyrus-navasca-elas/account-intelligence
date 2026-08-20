@@ -1,6 +1,6 @@
 import json
 
-from app.clients.anthropic import call_llm
+from app.clients.anthropic import call_llm, parse_json
 from app.schemas.research import Initiative, Signal
 
 INITIATIVES_SYSTEM_PROMPT = """
@@ -28,7 +28,7 @@ def infer_initiatives(signals: list[Signal]) -> list[Initiative]:
     user = _format_signals(signals)
     raw = call_llm(system=INITIATIVES_SYSTEM_PROMPT, user=user)
     try:
-        data = json.loads(raw)
+        data = parse_json(raw)
         return [Initiative(**i) for i in data.get("initiatives", [])]
     except (json.JSONDecodeError, TypeError, ValueError):
         return []

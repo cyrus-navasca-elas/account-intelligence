@@ -1,6 +1,6 @@
 import json
 
-from app.clients.anthropic import call_llm
+from app.clients.anthropic import call_llm, parse_json
 from app.schemas.research import DiscoveryQuestion, Gap
 
 QUESTIONS_SYSTEM_PROMPT = """
@@ -30,7 +30,7 @@ def generate_questions(gaps: list[Gap]) -> list[DiscoveryQuestion]:
     raw = call_llm(system=QUESTIONS_SYSTEM_PROMPT, user=user)
 
     try:
-        data = json.loads(raw)
+        data = parse_json(raw)
     except (json.JSONDecodeError, TypeError, ValueError):
         return []
 

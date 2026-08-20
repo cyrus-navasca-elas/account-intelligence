@@ -1,6 +1,6 @@
 import json
 
-from app.clients.anthropic import call_llm
+from app.clients.anthropic import call_llm, parse_json
 from app.schemas.research import Gap, MappedInitiative
 
 GAPS_SYSTEM_PROMPT = """
@@ -27,7 +27,7 @@ def synthesize_gaps(mapped: list[MappedInitiative]) -> list[Gap]:
     raw = call_llm(system=GAPS_SYSTEM_PROMPT, user=user)
 
     try:
-        data = json.loads(raw)
+        data = parse_json(raw)
     except (json.JSONDecodeError, TypeError, ValueError):
         return []
 
