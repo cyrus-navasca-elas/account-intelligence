@@ -22,11 +22,9 @@ Return JSON: {"initiatives": [{"initiative": "...", "evidence": "...", "source_u
 
 
 def _rank(sig):
-    """Rank key for sorting: (date_posted, salary_max) both treated as descending."""
+    """Rank key for sorting: date_posted descending. Signals without facts sort last."""
     facts = getattr(sig, "facts", None)
-    date = (facts.date_posted if facts and facts.date_posted else "")
-    salary = (facts.salary_max if facts and facts.salary_max else 0.0)
-    return (date, salary)
+    return facts.date_posted if facts and facts.date_posted else ""
 
 
 def infer_initiatives(signals: list[Signal]) -> list[Initiative]:

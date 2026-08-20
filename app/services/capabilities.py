@@ -22,7 +22,6 @@ class NotCapability(BaseModel):
     id: str
     name: str
     note: str = ""
-    signals: list[str] = []
 
 
 class CapabilityMap(BaseModel):
@@ -114,31 +113,6 @@ def map_capabilities(initiatives: list[Initiative]) -> list[MappedInitiative]:
             )
         )
     return result
-
-
-def detect_flags_from_skills(signals, cmap):
-    """Return deterministic 'capability_unverified: <id>' flags from Signal.facts.skills.
-
-    Case-insensitive substring match. Deduped. Ignores signals without JobFacts.
-    """
-    hits: list[str] = []
-    seen: set[str] = set()
-    for s in signals:
-        if s.type != "job_posting":
-            continue
-        facts = getattr(s, "facts", None)
-        if not facts or not facts.skills:
-            continue
-        skill_blob = " | ".join(facts.skills).lower()
-        for nc in cmap.not_capabilities:
-            for token in nc.signals:
-                if token.lower() in skill_blob:
-                    flag = f"capability_unverified: {nc.id}"
-                    if flag not in seen:
-                        seen.add(flag)
-                        hits.append(flag)
-                    break
-    return hits
 
 
 def _format(initiatives: list[Initiative], cmap: CapabilityMap) -> str:

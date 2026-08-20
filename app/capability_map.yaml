@@ -182,43 +182,33 @@ not_capabilities:
   - id: three_phase_control
     name: USACE / NAVFAC Three-Phase Control workflow
     note: "No confirmed native module. Flag capability_unverified: three_phase_control."
-    signals: ["three-phase control", "three phase control", "usace", "navfac", "dfow", "qcm certification"]
   - id: punch_list
     name: Punch list management
     note: Stays in customer's PM / Cx system by design.
-    signals: ["punch list", "punchlist"]
   - id: cx_system_of_record
     name: Commissioning system of record
     note: Holdpoint complements Cx; does not replace it.
-    signals: []
   - id: safety_ehs
     name: Safety / EHS management
     note: Out of scope.
-    signals: ["ehs management", "safety audit", "environmental health and safety"]
   - id: submittals_rfis
     name: Submittals / RFIs / document control
     note: Not offered.
-    signals: ["submittals", "rfis", "rfi tracking", "document control"]
   - id: schedule_integration
     name: P6 / MSP schedule integration
     note: Not confirmed.
-    signals: []
   - id: cost_change_orders
     name: Cost / change-order management
     note: Not offered.
-    signals: ["change order", "cost report", "buyout"]
   - id: lims_replacement
     name: LIMS replacement for testing labs
     note: Holdpoint does not touch lab LIMS or business systems.
-    signals: []
   - id: pm_system_replacement
     name: Procore / Autodesk replacement
     note: Coexists; does not replace PM system of record.
-    signals: []
   - id: engineer_signoff
     name: Professional engineer sign-off / responsible charge
     note: EOR retains responsible charge. Holdpoint does not sign for the engineer.
-    signals: []
 
 # ---------------------------------------------------------------------------
 competitors_context:

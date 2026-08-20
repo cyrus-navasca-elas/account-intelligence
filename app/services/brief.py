@@ -30,8 +30,6 @@ def assemble_brief(
     gaps: list[Gap],
     questions: list[DiscoveryQuestion],
     angle: str,
-    *,
-    deterministic_flags: list[str] | None = None,
 ) -> ResearchBrief:
     sources = []
     for s in signals:
@@ -53,11 +51,6 @@ def assemble_brief(
             if f not in seen:
                 seen.add(f)
                 flags.append(f)
-    for f in (deterministic_flags or []):
-        if f not in seen:
-            seen.add(f)
-            flags.append(f)
-
     status = "enriched" if initiatives else "failed"
     current_state = _summarize_current_state(initiatives)
 
