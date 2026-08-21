@@ -55,6 +55,9 @@ def decide_reach_out(
     if not any(m.matched_capability for m in mapped):
         return "skip", "No ELAS capability mapped to any initiative."
 
+    if not gaps:
+        return "hold", "No capability gaps synthesized despite mapped capabilities."
+
     flags = sorted(
         {m.unverified_capability for m in mapped if m.unverified_capability}
     )

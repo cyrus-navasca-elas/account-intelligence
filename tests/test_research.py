@@ -37,6 +37,8 @@ def test_research_schema_shape():
         "recommended_angle",
         "sources",
         "flags",
+        "reach_out",
+        "reach_out_reason",
     ]:
         assert key in body
 

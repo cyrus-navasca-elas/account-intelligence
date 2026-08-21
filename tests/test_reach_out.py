@@ -77,3 +77,16 @@ def test_reach_out_normalizes_unknown_recommendation_to_hold():
             angle="w",
         )
     assert r == "hold"
+
+
+def test_reach_out_holds_when_mapped_but_no_gaps_synthesized():
+    from app.services.reach_out import decide_reach_out
+    r, reason = decide_reach_out(
+        status="enriched",
+        signals=[],
+        mapped=[_mapped(cap="One live view of every inspection")],
+        gaps=[],
+        angle="",
+    )
+    assert r == "hold"
+    assert "no capability gaps" in reason.lower()

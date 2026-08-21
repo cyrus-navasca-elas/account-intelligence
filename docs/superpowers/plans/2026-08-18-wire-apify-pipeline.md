@@ -167,8 +167,7 @@ def test_gather_signals_maps_jobs_to_signals():
         }
     ]
     with patch("app.services.signals.apify.fetch_job_postings", return_value=fake_jobs), \
-         patch("app.services.signals.tavily.search_news", return_value=[]), \
-         patch("app.services.signals.tavily.fetch_site", return_value=""):
+         patch("app.services.signals.web_search.search_company_signals", return_value=[]):
         from app.services import signals
         out = signals.gather_signals(domain="prospect.com", name="Prospect")
 
@@ -184,8 +183,7 @@ def test_gather_signals_maps_jobs_to_signals():
 def test_gather_signals_skips_jobs_without_description():
     fake_jobs = [{"url": "https://x/y", "title": "T", "description_text": ""}]
     with patch("app.services.signals.apify.fetch_job_postings", return_value=fake_jobs), \
-         patch("app.services.signals.tavily.search_news", return_value=[]), \
-         patch("app.services.signals.tavily.fetch_site", return_value=""):
+         patch("app.services.signals.web_search.search_company_signals", return_value=[]):
         from app.services import signals
         out = signals.gather_signals(domain="prospect.com", name=None)
     assert out == []
