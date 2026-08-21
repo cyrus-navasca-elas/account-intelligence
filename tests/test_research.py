@@ -39,3 +39,10 @@ def test_research_schema_shape():
         "flags",
     ]:
         assert key in body
+
+
+def test_research_populates_reach_out_field_default_failed():
+    r = client.post("/research/companies/test-1", json={})
+    body = r.json()
+    assert body["reach_out"] == "skip"
+    assert "no signals" in body["reach_out_reason"].lower()
