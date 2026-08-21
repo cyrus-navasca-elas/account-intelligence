@@ -83,3 +83,20 @@ def test_format_salary_range_single_max_only():
     from app.services.brief import _format_salary_range
     f = JobFacts(salary_max=165000, salary_currency="USD", salary_unit="YEAR")
     assert _format_salary_range(f) == "165000 USD/YEAR"
+
+
+def test_brief_carries_reach_out_fields():
+    b = assemble_brief(
+        signals=[], initiatives=[_init("x")], mapped=[], gaps=[],
+        questions=[], angle="", reach_out="yes", reach_out_reason="strong fit",
+    )
+    assert b.reach_out == "yes"
+    assert b.reach_out_reason == "strong fit"
+
+
+def test_brief_reach_out_defaults_to_skip():
+    b = assemble_brief(
+        signals=[], initiatives=[], mapped=[], gaps=[], questions=[], angle="",
+    )
+    assert b.reach_out == "skip"
+    assert b.reach_out_reason == ""

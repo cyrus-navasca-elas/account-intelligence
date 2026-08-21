@@ -3,6 +3,7 @@ from app.schemas.research import (
     Gap,
     Initiative,
     MappedInitiative,
+    ReachOut,
     ResearchBrief,
     Signal,
     Source,
@@ -30,6 +31,9 @@ def assemble_brief(
     gaps: list[Gap],
     questions: list[DiscoveryQuestion],
     angle: str,
+    *,
+    reach_out: ReachOut = "skip",
+    reach_out_reason: str = "",
 ) -> ResearchBrief:
     sources = []
     for s in signals:
@@ -61,6 +65,8 @@ def assemble_brief(
         gaps=gaps,
         discovery_questions=questions,
         recommended_angle=angle,
+        reach_out=reach_out,
+        reach_out_reason=reach_out_reason,
         sources=sources,
         flags=flags,
     )

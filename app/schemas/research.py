@@ -12,6 +12,7 @@ DiscoveryStage = Literal[
     "gap_question",
 ]
 BriefStatus = Literal["enriched", "failed"]
+ReachOut = Literal["yes", "hold", "skip"]
 
 
 class ResearchRequest(BaseModel):
@@ -78,5 +79,7 @@ class ResearchBrief(BaseModel):
     gaps: list[Gap]
     discovery_questions: list[DiscoveryQuestion]
     recommended_angle: str
+    reach_out: ReachOut
+    reach_out_reason: str
     sources: list[Source]
     flags: list[str]
