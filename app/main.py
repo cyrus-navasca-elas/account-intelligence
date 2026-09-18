@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
@@ -19,12 +20,18 @@ app.include_router(research.router)
 app.mount("/ui", StaticFiles(directory=Path(__file__).parent / "static", html=True), name="ui")
 
 
-@app.get("/")
-def root() -> dict[str, str]:
-    """Root returns the version only.
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    """Send visitors to the UI; the bare host is not a useful landing page."""
+    return RedirectResponse(url="/ui/", status_code=307)
 
-    It previously echoed settings.app_name. Any misconfigured env var that
-    lands in app_name is then published on a public unauthenticated route, so
-    this endpoint no longer reflects configuration back to the caller.
+
+@app.get("/version")
+def version() -> dict[str, str]:
+    """Version only.
+
+    This previously lived on / and echoed settings.app_name too. Any
+    misconfigured env var landing in app_name was then published on a public
+    unauthenticated route, so no endpoint reflects configuration back now.
     """
     return {"version": settings.version}

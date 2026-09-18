@@ -101,6 +101,8 @@ def test_topbar_meta_shows_version_only():
     js = client.get("/ui/app.js").text
     assert '"v" + info.version' in js
     assert "info.service" not in js
+    # / is a redirect now, so the version fetch must not point at it
+    assert 'fetch("/version")' in js
 
 
 def test_capability_map_resolves_from_any_working_directory():
@@ -120,11 +122,17 @@ def test_capability_map_resolves_from_any_working_directory():
         load_capability_map.cache_clear()
 
 
-def test_root_does_not_echo_configuration():
+def test_root_redirects_to_the_ui():
+    r = client.get("/", follow_redirects=False)
+    assert r.status_code == 307
+    assert r.headers["location"] == "/ui/"
+
+
+def test_version_does_not_echo_configuration():
     """Config echoed on a public route leaks any misconfigured env var."""
-    r = client.get("/")
+    r = client.get("/version")
     assert r.status_code == 200
-    assert set(r.json()) == {"version"}, "root must expose version only"
+    assert set(r.json()) == {"version"}, "must expose version only"
 
 
 def test_openapi_title_is_not_sourced_from_env():

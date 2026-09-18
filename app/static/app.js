@@ -330,7 +330,7 @@ nameInput.addEventListener("input", () => {
 });
 
 /* footer meta: which service/version the UI is talking to */
-fetch("/")
+fetch("/version")
   .then((r) => (r.ok ? r.json() : null))
   .then((info) => {
     if (info) document.getElementById("api-meta").textContent = "v" + info.version;
