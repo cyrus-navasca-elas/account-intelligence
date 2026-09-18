@@ -17,13 +17,13 @@ app = FastAPI(title=API_TITLE, version=settings.version)
 app.include_router(health.router)
 app.include_router(research.router)
 
-app.mount("/ui", StaticFiles(directory=Path(__file__).parent / "static", html=True), name="ui")
+app.mount("/app", StaticFiles(directory=Path(__file__).parent / "static", html=True), name="app")
 
 
 @app.get("/", include_in_schema=False)
 def root() -> RedirectResponse:
     """Send visitors to the UI; the bare host is not a useful landing page."""
-    return RedirectResponse(url="/ui/", status_code=307)
+    return RedirectResponse(url="/app/", status_code=307)
 
 
 @app.get("/version")
