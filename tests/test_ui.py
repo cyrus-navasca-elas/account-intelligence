@@ -125,3 +125,15 @@ def test_root_does_not_echo_configuration():
     r = client.get("/")
     assert r.status_code == 200
     assert set(r.json()) == {"version"}, "root must expose version only"
+
+
+def test_openapi_title_is_not_sourced_from_env():
+    """/openapi.json and /docs are public; env values must not reach them."""
+    from app.config import settings
+
+    settings.app_name = "sk-ant-LEAKED-SENTINEL"
+    try:
+        schema = client.get("/openapi.json").json()
+        assert "LEAKED" not in schema["info"]["title"]
+    finally:
+        settings.app_name = "account-intelligence"

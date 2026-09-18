@@ -6,7 +6,12 @@ from fastapi.staticfiles import StaticFiles
 from app.config import settings
 from app.routers import health, research
 
-app = FastAPI(title=settings.app_name, version=settings.version)
+# Public API metadata is a constant, never sourced from env. A misconfigured
+# variable reaching app_name would otherwise be published in /openapi.json
+# and /docs, both of which are unauthenticated.
+API_TITLE = "account-intelligence"
+
+app = FastAPI(title=API_TITLE, version=settings.version)
 
 app.include_router(health.router)
 app.include_router(research.router)
