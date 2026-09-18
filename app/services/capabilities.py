@@ -29,9 +29,23 @@ class CapabilityMap(BaseModel):
     not_capabilities: list[NotCapability]
 
 
+def _resolve_map_path(configured: str) -> Path:
+    """Resolve the map path against the repo root, not the process CWD.
+
+    Serverless runtimes do not guarantee CWD == repo root, and a miss here is
+    silent (empty map -> no capability matches -> empty gaps), so anchor the
+    relative path to this file instead.
+    """
+    path = Path(configured)
+    if path.is_absolute() or path.exists():
+        return path
+    root_relative = Path(__file__).resolve().parents[2] / path
+    return root_relative if root_relative.exists() else path
+
+
 @lru_cache(maxsize=1)
 def load_capability_map() -> CapabilityMap:
-    path = Path(settings.capability_map_path)
+    path = _resolve_map_path(settings.capability_map_path)
     if not path.exists():
         return CapabilityMap(capabilities=[], not_capabilities=[])
     data = yaml.safe_load(path.read_text()) or {}

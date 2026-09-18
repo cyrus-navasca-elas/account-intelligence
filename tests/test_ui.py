@@ -101,3 +101,20 @@ def test_topbar_meta_shows_version_only():
     js = client.get("/ui/app.js").text
     assert '"v" + info.version' in js
     assert "info.service" not in js
+
+
+def test_capability_map_resolves_from_any_working_directory():
+    """Serverless CWD is not guaranteed; a miss here is silent, not loud."""
+    import os
+
+    from app.services.capabilities import load_capability_map
+
+    cwd = os.getcwd()
+    try:
+        os.chdir("/tmp")
+        load_capability_map.cache_clear()
+        cm = load_capability_map()
+        assert cm.capabilities, "capability map came back empty from a foreign CWD"
+    finally:
+        os.chdir(cwd)
+        load_capability_map.cache_clear()
