@@ -151,27 +151,6 @@ a:hover { color: var(--text); }
 .input[aria-invalid="true"]:focus-visible { outline-color: var(--red); }
 
 .field__err { color: var(--red); font-size: 12px; margin-top: var(--space-2); }
-
-.toggle {
-  display: flex; align-items: center; gap: var(--space-3);
-  min-height: 44px; cursor: pointer; user-select: none;
-}
-.toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
-.toggle__track {
-  flex: none; width: 40px; height: 24px; border-radius: 999px;
-  background: var(--ink-sunken); border: 1px solid var(--line-strong);
-  display: flex; align-items: center; padding: 2px; transition: background 120ms, border-color 120ms;
-}
-.toggle__thumb {
-  width: 18px; height: 18px; border-radius: 50%;
-  background: var(--text-faint); transition: transform 120ms, background 120ms;
-}
-.toggle input:checked + .toggle__track { background: var(--green-dim); border-color: var(--green); }
-.toggle input:checked + .toggle__track .toggle__thumb { transform: translateX(16px); background: var(--green); }
-.toggle input:focus-visible + .toggle__track { outline: 2px solid var(--green-bright); outline-offset: 2px; }
-.toggle__text { font-size: 14px; }
-.toggle__text small { display: block; color: var(--text-muted); font-size: 12px; }
-
 /* ---- buttons --------------------------------------------------------- */
 .btn {
   min-height: 44px;

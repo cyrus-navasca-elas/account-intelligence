@@ -285,7 +285,6 @@ form.addEventListener("submit", async (event) => {
     domain: value("domain"),
     name: value("name"),
     notes: value("notes"),
-    force: document.getElementById("force").checked,
   };
 
   const startedAt = Date.now();

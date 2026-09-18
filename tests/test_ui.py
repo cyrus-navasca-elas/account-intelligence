@@ -145,3 +145,12 @@ def test_openapi_title_is_not_sourced_from_env():
         assert "LEAKED" not in schema["info"]["title"]
     finally:
         settings.app_name = "account-intelligence"
+
+
+def test_force_refresh_control_is_gone():
+    """The toggle was inert: run_research never reads ResearchRequest.force."""
+    html = client.get("/app/").text
+    assert "Force refresh" not in html
+    assert 'id="force"' not in html
+    assert "force" not in client.get("/app/app.js").text
+    assert ".toggle" not in client.get("/app/styles.css").text
