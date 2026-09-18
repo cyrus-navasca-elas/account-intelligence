@@ -2,9 +2,30 @@ from app.clients import apify, web_search
 from app.schemas.research import JobFacts, Signal
 
 
+def normalize_domain(raw: str | None) -> str | None:
+    """Reduce user input to a bare registrable domain.
+
+    Callers paste whatever the browser shows ("https://www.acme.com/about"),
+    but the job actor filters on a bare domain and the search prompt builds
+    its own https:// prefix. Returns None when nothing usable is left.
+    """
+    if not raw:
+        return None
+    d = raw.strip().lower()
+    d = d.split("://", 1)[-1]  # drop scheme
+    d = d.split("/", 1)[0]  # drop path
+    d = d.split("?", 1)[0].split("#", 1)[0]
+    d = d.split("@")[-1]  # drop any userinfo
+    d = d.split(":", 1)[0]  # drop port
+    if d.startswith("www."):
+        d = d[4:]
+    return d or None
+
+
 def gather_signals(domain: str | None, name: str | None) -> list[Signal]:
     """Collect raw materials for LLM interpretation. No LLM reasoning here."""
     signals: list[Signal] = []
+    domain = normalize_domain(domain)
 
     if domain:
         jobs = apify.fetch_job_postings(domain, name)

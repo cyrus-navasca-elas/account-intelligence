@@ -154,3 +154,28 @@ def test_force_refresh_control_is_gone():
     assert 'id="force"' not in html
     assert "force" not in client.get("/app/app.js").text
     assert ".toggle" not in client.get("/app/styles.css").text
+
+
+def test_domain_input_is_normalized_to_a_bare_domain():
+    from app.services.signals import normalize_domain
+
+    assert normalize_domain("https://www.absherco.com/") == "absherco.com"
+    assert normalize_domain("http://absherco.com/about?x=1") == "absherco.com"
+    assert normalize_domain("  WWW.Absherco.com  ") == "absherco.com"
+    assert normalize_domain("") is None
+
+
+def test_missing_credentials_are_named_in_the_brief():
+    """An unset key must not look like a company with no signals."""
+    from app.config import settings
+    from app.services.research import _unconfigured_sources
+
+    anth, apify_key = settings.anthropic_api_key, settings.apify_api_key
+    try:
+        settings.anthropic_api_key = ""
+        settings.apify_api_key = "present"
+        assert _unconfigured_sources() == ["ANTHROPIC_API_KEY"]
+        settings.anthropic_api_key = "present"
+        assert _unconfigured_sources() == []
+    finally:
+        settings.anthropic_api_key, settings.apify_api_key = anth, apify_key
