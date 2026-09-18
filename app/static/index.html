@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Account Intelligence</title>
+<link rel="stylesheet" href="styles.css?v=3" />
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar__inner">
+    <div class="brand">
+      <a class="brand__link" href="https://elasapp.com/" target="_blank" rel="noopener noreferrer">
+        <img class="brand__logo" src="elas-logo.png" alt="elas" width="72" height="20" />
+      </a>
+      <span class="brand__name">Account Intelligence</span>
+    </div>
+    <span class="brand__meta" id="api-meta">&nbsp;</span>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- INPUT -->
+  <section class="panel panel--form" aria-labelledby="form-title">
+    <h1 class="panel__title" id="form-title">Research a company</h1>
+    <p class="panel__hint">Runs the full signal &rarr; initiative &rarr; gap pipeline.</p>
+
+    <form id="research-form" novalidate>
+      <div class="field">
+        <label class="label" for="name">Company name <span class="req" aria-hidden="true">*</span></label>
+        <input class="input" id="name" name="name" autocomplete="off" required
+               placeholder="Acme Manufacturing" aria-describedby="name-err" />
+        <p class="field__err" id="name-err" hidden>Company name is required.</p>
+      </div>
+
+      <div class="field">
+        <label class="label" for="domain">Domain</label>
+        <input class="input" id="domain" name="domain" type="text" autocomplete="off"
+               placeholder="acme.com" />
+      </div>
+
+      <div class="field">
+        <label class="label" for="notes">Notes</label>
+        <textarea class="input input--area" id="notes" name="notes" rows="3"
+                  placeholder="Anything the pipeline should know."></textarea>
+      </div>
+
+      <label class="toggle">
+        <input type="checkbox" id="force" name="force" />
+        <span class="toggle__track" aria-hidden="true"><span class="toggle__thumb"></span></span>
+        <span class="toggle__text">Force refresh<small>Ignore any cached brief</small></span>
+      </label>
+
+      <button class="btn btn--primary" id="submit" type="submit">
+        <span class="btn__label">Run research</span>
+      </button>
+
+      <p class="timer" id="timer" hidden>
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="timer-text">Working&hellip; 0s</span>
+      </p>
+    </form>
+  </section>
+
+  <!-- OUTPUT -->
+  <section class="results" id="results" aria-live="polite" aria-busy="false">
+    <div class="state" id="state-idle">
+      <span class="state__mark" aria-hidden="true"></span>
+      <h2 class="state__title">No brief yet</h2>
+      <p class="state__body">Add a domain or company name, then run research. The brief appears here.</p>
+    </div>
+  </section>
+</main>
+
+<script src="app.js?v=4"></script>
+</body>
+</html>
