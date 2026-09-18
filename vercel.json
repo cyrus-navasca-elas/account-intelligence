@@ -4,8 +4,5 @@
       "maxDuration": 300,
       "includeFiles": "app/**"
     }
-  },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
-  ]
+  }
 }
