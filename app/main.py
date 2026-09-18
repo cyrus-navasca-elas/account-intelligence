@@ -16,4 +16,10 @@ app.mount("/ui", StaticFiles(directory=Path(__file__).parent / "static", html=Tr
 
 @app.get("/")
 def root() -> dict[str, str]:
-    return {"service": settings.app_name, "version": settings.version}
+    """Root returns the version only.
+
+    It previously echoed settings.app_name. Any misconfigured env var that
+    lands in app_name is then published on a public unauthenticated route, so
+    this endpoint no longer reflects configuration back to the caller.
+    """
+    return {"version": settings.version}

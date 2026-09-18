@@ -118,3 +118,10 @@ def test_capability_map_resolves_from_any_working_directory():
     finally:
         os.chdir(cwd)
         load_capability_map.cache_clear()
+
+
+def test_root_does_not_echo_configuration():
+    """Config echoed on a public route leaks any misconfigured env var."""
+    r = client.get("/")
+    assert r.status_code == 200
+    assert set(r.json()) == {"version"}, "root must expose version only"
