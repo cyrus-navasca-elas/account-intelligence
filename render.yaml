@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: account-intelligence
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter          # free spins down when idle; a cold start mid-demo is ~50s
+    healthCheckPath: /health
+    envVars:
+      # Secrets: sync:false means Render prompts you, values never live in git.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: APIFY_API_KEY
+        sync: false
+      # Non-secret config, mirrors .env.example
+      - key: ANTHROPIC_MODEL
+        value: claude-opus-4-7
+      - key: APIFY_JOBS_ACTOR_ID
+        value: fantastic-jobs/career-site-job-listing-api
+      - key: CAPABILITY_MAP_PATH
+        value: app/capability_map.yaml
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
